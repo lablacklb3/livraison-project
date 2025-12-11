@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Connexion</h2>
+
+    <label>Nom d'utilisateur</label>
+    <input type="text" id="username" placeholder="user1 ou user2" />
+
+    <label>Mot de passe</label>
+    <input type="password" id="password" placeholder="******" />
+    <p style="text-align: center; margin-top: 15px;">
+       <a href="register.html">Créer un nouvel utilisateur</a>
+    </p>
+
+
+    <button class="btn" onclick="login()">Se connecter</button>
+
+    <div id="error" class="error"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

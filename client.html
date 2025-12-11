@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interface Client</title>
+  <link rel="stylesheet" href="interface.css">
+</head>
+<body>
+  <div class="container">
+    <h2 id="welcome">Bienvenue</h2>
+
+    <div class="commande-section">
+      <h3>Passer une commande</h3>
+       <label>Adresse :</label>
+        <input type="text" id="adresse" placeholder="Votre adresse">
+        <button class="btn small" onclick="getLocation()">📍 Utiliser ma position</button>
+        
+      <label>Restaurant (optionnel)</label>
+         <select id="restaurant">
+            <option value="">--Choisir un restaurant--</option>
+            <option value="LE M">LE M</option>
+            <option value="BARBAROSSA">BARBAROSSA</option>
+            <option value="BIP BIZZA">BIP BIZZA</option>
+         </select>
+
+      
+      
+      
+      <label>Produit :</label>
+      <input type="text" id="produit" placeholder="Nom du produit">
+      <button class="btn" onclick="passerCommande()">Envoyer la commande</button>
+    </div>
+
+    <div class="commande-liste">
+      <h3>Mes commandes</h3>
+      <ul id="listeCommandes"></ul>
+    </div>
+
+    <button class="btn logout" onclick="logout()">Déconnexion</button>
+  </div>
+
+  <script src="interface.js"></script>
+</body>
+</html>
