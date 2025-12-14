@@ -1,126 +1,137 @@
-/* RESET DE BASE */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+// Gestion de la géolocalisation
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+    }
 }
 
-body {
-    background-color: #f5f6fa;
-    color: #333;
+function showPosition(position) {
+    const adresseInput = document.getElementById("adresse");
+    adresseInput.value = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
 }
 
-.container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px 30px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Permission de géolocalisation refusée.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Informations de position non disponibles.");
+            break;
+        case error.TIMEOUT:
+            alert("La demande de géolocalisation a expiré.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("Erreur inconnue.");
+            break;
+    }
 }
 
-/* TITRES */
-h2, h3, h4 {
-    margin-bottom: 15px;
-    color: #2f3640;
+// Tableau pour stocker les commandes
+let commandes = [];
+let produits = []; // produits ajoutés avant envoi
+
+// Ajouter un produit à la liste
+function ajouterProduit() {
+    const nom = document.getElementById("nomProduit").value.trim();
+    const prix = parseFloat(document.getElementById("prixProduit").value);
+
+    if (nom === "" || isNaN(prix) || prix < 0) {
+        alert("Veuillez entrer un nom et un prix valide pour le produit.");
+        return;
+    }
+
+    produits.push({ nom, prix: prix.toFixed(2) });
+    afficherProduits();
+    document.getElementById("nomProduit").value = "";
+    document.getElementById("prixProduit").value = "";
 }
 
-/* FORMULAIRES */
-label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: 600;
+// Afficher les produits ajoutés
+function afficherProduits() {
+    const liste = document.getElementById("produitsListe");
+    liste.innerHTML = "";
+    produits.forEach((p, index) => {
+        const li = document.createElement("div");
+        li.innerHTML = `${p.nom} - ${p.prix} € <button onclick="supprimerProduit(${index})">❌</button>`;
+        liste.appendChild(li);
+    });
 }
 
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #dcdde1;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s;
+// Supprimer un produit de la liste
+function supprimerProduit(index) {
+    produits.splice(index, 1);
+    afficherProduits();
 }
 
-input:focus, select:focus {
-    border-color: #4cd137;
-    box-shadow: 0 0 5px rgba(76, 209, 55, 0.3);
+// Passer la commande
+function passerCommande() {
+    const adresse = document.getElementById("adresse").value.trim();
+    const restaurant = document.getElementById("restaurant").value;
+
+    // Prix de livraison minimum 300 DA
+    let prixLivraison = parseFloat(document.getElementById("prixLivraison").value) || 300;
+    if (prixLivraison < 300) prixLivraison = 300;
+
+    if (adresse === "" || produits.length === 0) {
+        alert("Veuillez remplir l'adresse et ajouter au moins un produit.");
+        return;
+    }
+
+    let totalProduits = 0;
+    produits.forEach(p => totalProduits += parseFloat(p.prix));
+    const total = totalProduits + prixLivraison;
+
+    const commande = {
+        adresse,
+        restaurant: restaurant || "Non spécifié",
+        produits: [...produits],
+        prixLivraison: prixLivraison.toFixed(2),
+        total: total.toFixed(2),
+        date: new Date().toLocaleString()
+    };
+
+    commandes.push(commande);
+    afficherCommandes();
+
+    // Reset
+    produits = [];
+    afficherProduits();
+    document.getElementById("prixLivraison").value = "";
+    alert(`Commande envoyée ! Total : ${total.toFixed(2)} DA`);
 }
 
-/* BOUTONS */
-.btn {
-    padding: 10px 15px;
-    background-color: #4cd137;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
+// Affichage des commandes
+function afficherCommandes() {
+    const liste = document.getElementById("listeCommandes");
+    liste.innerHTML = "";
+
+    commandes.forEach((c, index) => {
+        const li = document.createElement("li");
+        const produitsHTML = c.produits.map(p => `${p.nom} - ${p.prix} €`).join("<br>");
+        li.innerHTML = `
+            <strong>Produits :</strong><br>${produitsHTML}<br>
+            Restaurant: ${c.restaurant} <br>
+            Livraison: ${c.prixLivraison} € <br>
+            <strong>Total: ${c.total} €</strong> <br>
+            Adresse: ${c.adresse} <br>
+            Date: ${c.date} <br>
+            <button onclick="supprimerCommande(${index})">Supprimer</button>
+        `;
+        liste.appendChild(li);
+    });
 }
 
-.btn:hover {
-    background-color: #44bd32;
+// Supprimer une commande
+function supprimerCommande(index) {
+    commandes.splice(index, 1);
+    afficherCommandes();
 }
 
-.btn.small {
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    margin-top: 5px;
-}
-
-.btn.logout {
-    background-color: #e84118;
-    margin-top: 20px;
-}
-
-.btn.logout:hover {
-    background-color: #c23616;
-}
-
-/* LISTE DES COMMANDES */
-.commande-liste ul {
-    list-style: none;
-}
-
-.commande-liste li {
-    background-color: #f1f2f6;
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.commande-liste li button {
-    margin-top: 10px;
-    background-color: #e84118;
-    border-radius: 8px;
-    padding: 5px 10px;
-}
-
-.commande-liste li button:hover {
-    background-color: #c23616;
-}
-
-/* PRODUITS DANS LA COMMANDE */
-.produit-section div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    padding: 8px 10px;
-    background-color: #dcdde1;
-    border-radius: 8px;
-}
-
-.produit-section div button {
-    background-color: #e84118;
-    border-radius: 5px;
-    padding: 3px 6px;
-}
-
-.produit-section div button:hover {
-    background-color: #c23616;
+// Déconnexion simple
+function logout() {
+    alert("Vous êtes déconnecté !");
+    window.location.href = "index.html"; // à adapter selon votre page de login
 }
