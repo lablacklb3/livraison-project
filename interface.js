@@ -1,104 +1,126 @@
-// Vérifier si l'utilisateur est connecté
-const username = localStorage.getItem("loggedUser");
-const role = localStorage.getItem("role");
-
-if (!username || role !== "client") {
-  window.location.href = "index.html"; // redirection si non connecté ou mauvais rôle
+/* RESET DE BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-// Mettre à jour le titre
-document.getElementById("welcome").textContent = "Bienvenue " + username;
-
-// Charger les commandes depuis localStorage
-let commandes = JSON.parse(localStorage.getItem("commandes")) || [];
-
-// Fonction pour afficher les commandes de cet utilisateur
-function afficherCommandes() {
-  const liste = document.getElementById("listeCommandes");
-  liste.innerHTML = "";
-
-  const userCommandes = commandes.filter(cmd => cmd.client === username);
-
-  userCommandes.forEach(cmd => {
-    const li = document.createElement("li");
-    li.textContent = `Produit: ${cmd.produit} | Adresse: ${cmd.adresse}`;
-    if (cmd.restaurant) {
-      li.textContent += ` | Restaurant: ${cmd.restaurant}`;
-    }
-    liste.appendChild(li);
-  });
+body {
+    background-color: #f5f6fa;
+    color: #333;
 }
 
-// Fonction pour passer une commande
-function passerCommande() {
-  const adresse = document.getElementById("adresse").value;
-  const produit = document.getElementById("produit").value;
-  const restaurant = document.getElementById("restaurant").value;
-
-  if (!adresse || !produit) {
-    alert("Veuillez remplir tous les champs !");
-    return;
-  }
-
-  // Ajouter la nouvelle commande avec le client
-  commandes.push({ adresse, produit, restaurant: restaurant || "Non spécifié", client: username });
-
-  // Enregistrer dans localStorage
-  localStorage.setItem("commandes", JSON.stringify(commandes));
-
-  // Réinitialiser les champs
-  document.getElementById("adresse").value = "";
-  document.getElementById("produit").value = "";
-  document.getElementById("restaurant").value = "";
-
-  afficherCommandes();
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-// Fonction géolocalisation
-function getLocation() {
-  const adresseInput = document.getElementById("adresse");
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        adresseInput.value = `Latitude: ${lat}, Longitude: ${lon}`;
-        // Optionnel : utiliser une API pour convertir en adresse réelle
-      },
-      (error) => {
-        alert("Impossible d'obtenir la localisation : " + error.message);
-      }
-    );
-  } else {
-    alert("La géolocalisation n'est pas supportée par votre navigateur.");
-  }
+/* TITRES */
+h2, h3, h4 {
+    margin-bottom: 15px;
+    color: #2f3640;
 }
 
-// Fonction déconnexion
-function logout() {
-  localStorage.removeItem("loggedUser");
-  localStorage.removeItem("role");
-  window.location.href = "index.html";
+/* FORMULAIRES */
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: 600;
 }
 
-// Afficher les commandes au chargement
-afficherCommandes();
-function verifierCommandes() {
-  let commandes = JSON.parse(localStorage.getItem("commandes")) || [];
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #dcdde1;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+}
 
-  // Filtrer les commandes de cet utilisateur
-  const userCommandes = commandes.filter(cmd => cmd.client === username);
+input:focus, select:focus {
+    border-color: #4cd137;
+    box-shadow: 0 0 5px rgba(76, 209, 55, 0.3);
+}
 
-  // Vérifier si une commande a été acceptée et n'a pas encore été notifiée
-  userCommandes.forEach(cmd => {
-    if (cmd.status === "acceptée" && !cmd.notified) {
-      // Marquer comme notifiée pour ne pas répéter
-      cmd.notified = true;
-      localStorage.setItem("commandes", JSON.stringify(commandes));
+/* BOUTONS */
+.btn {
+    padding: 10px 15px;
+    background-color: #4cd137;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
 
-      // Ouvrir la page de confirmation
-      window.open("commandeacceptee.html", "_blank", "width=400,height=300");
-    }
-  });
+.btn:hover {
+    background-color: #44bd32;
+}
+
+.btn.small {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.btn.logout {
+    background-color: #e84118;
+    margin-top: 20px;
+}
+
+.btn.logout:hover {
+    background-color: #c23616;
+}
+
+/* LISTE DES COMMANDES */
+.commande-liste ul {
+    list-style: none;
+}
+
+.commande-liste li {
+    background-color: #f1f2f6;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.commande-liste li button {
+    margin-top: 10px;
+    background-color: #e84118;
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+.commande-liste li button:hover {
+    background-color: #c23616;
+}
+
+/* PRODUITS DANS LA COMMANDE */
+.produit-section div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 8px 10px;
+    background-color: #dcdde1;
+    border-radius: 8px;
+}
+
+.produit-section div button {
+    background-color: #e84118;
+    border-radius: 5px;
+    padding: 3px 6px;
+}
+
+.produit-section div button:hover {
+    background-color: #c23616;
 }
