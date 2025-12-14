@@ -66,6 +66,9 @@ function supprimerProduit(index) {
     afficherProduits();
 }
 
+
+
+
 // Passer la commande
 function passerCommande() {
     const adresse = document.getElementById("adresse").value.trim();
@@ -90,48 +93,65 @@ function passerCommande() {
         produits: [...produits],
         prixLivraison: prixLivraison.toFixed(2),
         total: total.toFixed(2),
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString(),
+        statut: "en attente"
     };
 
-    commandes.push(commande);
-    afficherCommandes();
+    // 🔹 Ajouter la commande dans toutesCommandes pour le livreur
+    let toutesCommandes = JSON.parse(localStorage.getItem("toutesCommandes") || "[]");
+    toutesCommandes.push(commande);
+    localStorage.setItem("toutesCommandes", JSON.stringify(toutesCommandes));
 
-    // Reset
+    // Sauvegarder la commande en attente pour le client
+    localStorage.setItem("commandeEnAttente", JSON.stringify(commande));
+
+    // Réinitialiser les produits
     produits = [];
     afficherProduits();
     document.getElementById("prixLivraison").value = "";
-    alert(`Commande envoyée ! Total : ${total.toFixed(2)} DA`);
+
+    // Redirection vers la page d'attente
+    window.location.href = "attente.html";
 }
 
-// Affichage des commandes
-function afficherCommandes() {
-    const liste = document.getElementById("listeCommandes");
-    liste.innerHTML = "";
 
-    commandes.forEach((c, index) => {
-        const li = document.createElement("li");
-        const produitsHTML = c.produits.map(p => `${p.nom} - ${p.prix} €`).join("<br>");
-        li.innerHTML = `
-            <strong>Produits :</strong><br>${produitsHTML}<br>
-            Restaurant: ${c.restaurant} <br>
-            Livraison: ${c.prixLivraison} € <br>
-            <strong>Total: ${c.total} €</strong> <br>
-            Adresse: ${c.adresse} <br>
-            Date: ${c.date} <br>
-            <button onclick="supprimerCommande(${index})">Supprimer</button>
-        `;
-        liste.appendChild(li);
-    });
-}
 
-// Supprimer une commande
-function supprimerCommande(index) {
-    commandes.splice(index, 1);
-    afficherCommandes();
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Déconnexion simple
 function logout() {
     alert("Vous êtes déconnecté !");
     window.location.href = "index.html"; // à adapter selon votre page de login
+}
+
+// Toggle menu
+function toggleMenu() {
+    document.querySelector('.sidebar').classList.toggle('active');
+    document.querySelector('.content').classList.toggle('shift');
 }
