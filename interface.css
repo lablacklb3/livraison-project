@@ -1,126 +1,185 @@
-/* RESET DE BASE */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-body {
-    background-color: #f5f6fa;
-    color: #333;
+.app {
+    display: flex;
+    min-height: 100vh;
 }
 
-.container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px 30px;
-    background-color: #ffffff;
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    background: #2ecc71;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.menu {
+    list-style: none;
+}
+
+.menu li {
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.menu li:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.logout {
+    background: #e74c3c;
+}
+
+  .socials {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+}
+
+.socials a {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+/* Couleurs officielles */
+.socials .facebook {
+    background: #1877f2;
+}
+
+.socials .instagram {
+    background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+}
+
+.socials .tiktok {
+    background: #000;
+}
+
+/* Hover effet */
+.socials a:hover {
+    transform: scale(1.15);
+    opacity: 0.9;
+}
+
+   
+   
+
+
+/* CONTENT */
+.content {
+    flex: 1;
+    padding: 30px;
+    background: url("image/client-bg.jpg") no-repeat center center;
+    background-size: cover;
+    overflow-y: auto;
+}
+
+
+.section {
+   display: none;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* TITRES */
-h2, h3, h4 {
-    margin-bottom: 15px;
-    color: #2f3640;
-}
-
-/* FORMULAIRES */
-label {
+.section.active {
     display: block;
-    margin: 10px 0 5px;
-    font-weight: 600;
+}
+
+/* FORM */
+label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
 }
 
 input, select {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
+    margin: 10px 0;
     border-radius: 8px;
-    border: 1px solid #dcdde1;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s;
+    border: 1px solid #ccc;
 }
 
-input:focus, select:focus {
-    border-color: #4cd137;
-    box-shadow: 0 0 5px rgba(76, 209, 55, 0.3);
-}
-
-/* BOUTONS */
 .btn {
+    background: #2ecc71;
+    color: white;
     padding: 10px 15px;
-    background-color: #4cd137;
-    color: #fff;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-.btn:hover {
-    background-color: #44bd32;
 }
 
 .btn.small {
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
-.btn.logout {
-    background-color: #e84118;
-    margin-top: 20px;
+/* LISTE */
+#produitsListe div,
+#listeCommandes li {
+    background: #ecf0f1;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 10px;
+}
+/* BOUTON MENU */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    font-size: 22px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 1000;
 }
 
-.btn.logout:hover {
-    background-color: #c23616;
+/* SIDEBAR DYNAMIQUE */
+.sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    height: 100%;
+    transition: 0.3s ease;
+    z-index: 999;
 }
 
-/* LISTE DES COMMANDES */
-.commande-liste ul {
-    list-style: none;
+.sidebar.active {
+    left: 0;
 }
 
-.commande-liste li {
-    background-color: #f1f2f6;
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+/* CONTENU S’ADAPTE */
+.content {
+    margin-left: 0;
+    transition: 0.3s;
 }
 
-.commande-liste li button {
-    margin-top: 10px;
-    background-color: #e84118;
-    border-radius: 8px;
-    padding: 5px 10px;
-}
-
-.commande-liste li button:hover {
-    background-color: #c23616;
-}
-
-/* PRODUITS DANS LA COMMANDE */
-.produit-section div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    padding: 8px 10px;
-    background-color: #dcdde1;
-    border-radius: 8px;
-}
-
-.produit-section div button {
-    background-color: #e84118;
-    border-radius: 5px;
-    padding: 3px 6px;
-}
-
-.produit-section div button:hover {
-    background-color: #c23616;
+.content.shift {
+    margin-left: 260px;
 }
