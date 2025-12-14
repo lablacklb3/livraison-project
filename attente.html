@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Commande en attente</title>
+    <link rel="stylesheet" href="attente.css">
+</head>
+<body>
+
+<div class="attente-container">
+    <h1>⏳ Commande en cours</h1>
+    <p>Votre commande est en attente de traitement.</p>
+
+    <div id="detailsCommande"></div>
+
+    <!-- Bouton annuler -->
+    <button class="btn cancel" onclick="afficherRaisons()">Annuler la commande ❌</button>
+
+    <!-- Choix de raison -->
+    <div id="raisonContainer" style="display:none; margin-top:20px;">
+        <p>Pourquoi voulez-vous annuler ?</p>
+        <button onclick="annulerCommande('Le livreur est en retard')">Le livreur est en retard</button>
+        <button onclick="annulerCommande('J’ai changé d’avis')">J’ai changé d’avis</button>
+        <button onclick="annulerCommande('Produit non disponible')">Produit non disponible</button>
+        <button onclick="annulerCommande('Autre raison')">Autre raison</button>
+    </div>
+
+    <p class="info">
+        Vous ne pouvez pas passer une autre commande tant que celle-ci n’est pas terminée.
+    </p>
+</div>
+
+<script src="attente.js"></script>
+</body>
+</html>
