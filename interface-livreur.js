@@ -1,149 +1,139 @@
 // =======================
-// Gestion de la géolocalisation
+// Vérification connexion
 // =======================
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
-    }
+const username = localStorage.getItem("loggedUser");
+const role = localStorage.getItem("role");
+
+if (!username || role !== "livreur") {
+    window.location.href = "index.html";
 }
 
-function showPosition(position) {
-    const adresseInput = document.getElementById("adresse");
-    adresseInput.value = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-}
-
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            alert("Permission de géolocalisation refusée.");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            alert("Informations de position non disponibles.");
-            break;
-        case error.TIMEOUT:
-            alert("La demande de géolocalisation a expiré.");
-            break;
-        case error.UNKNOWN_ERROR:
-            alert("Erreur inconnue.");
-            break;
-    }
-}
+// Message de bienvenue
+document.getElementById("welcome").textContent = "Bienvenue " + username;
 
 // =======================
-// Gestion des produits
+// Afficher commandes
 // =======================
-let produits = [];
 
-function ajouterProduit() {
-    const nom = document.getElementById("nomProduit").value.trim();
-    const prix = parseFloat(document.getElementById("prixProduit").value);
+function afficherCommandesLivreur() {
+    const liste = document.getElementById("listeCommandes");
+    liste.innerHTML = "";
 
-    if (!nom || isNaN(prix) || prix < 0) {
-        alert("Veuillez entrer un nom et un prix valide.");
+    // Récupérer toutes les commandes depuis le localStorage
+    let toutesCommandes = JSON.parse(localStorage.getItem("toutesCommandes")) || [];
+
+    // Filtrer uniquement celles en attente
+    let commandesEnAttente = toutesCommandes.filter(c => c.statut === "en attente");
+
+    if (commandesEnAttente.length === 0) {
+        liste.innerHTML = "<li>Aucune commande en attente</li>";
         return;
     }
 
-    produits.push({ nom, prix: prix.toFixed(2) });
-    afficherProduits();
-    document.getElementById("nomProduit").value = "";
-    document.getElementById("prixProduit").value = "";
-}
+    commandesEnAttente.forEach((c) => {
+        const li = document.createElement("li");
+        const produitsHTML = c.produits.map(p => `${p.nom} - ${p.prix} DA`).join("<br>");
 
-function afficherProduits() {
-    const liste = document.getElementById("produitsListe");
-    liste.innerHTML = "";
-    produits.forEach((p, index) => {
-        const li = document.createElement("div");
-        li.innerHTML = `${p.nom} - ${p.prix} DA <button onclick="supprimerProduit(${index})">❌</button>`;
+        li.innerHTML = `
+            <strong>Client :</strong> ${c.client}<br>
+            <strong>Produits :</strong><br>${produitsHTML}<br>
+            Restaurant : ${c.restaurant}<br>
+            Livraison : ${c.prixLivraison} DA<br>
+            <strong>Total : ${c.total} DA</strong><br>
+            Adresse : ${c.adresse}<br>
+            Date : ${c.date}<br>
+            <strong>Statut :</strong> ${c.statut}<br><br>
+            <button onclick="accepterCommandeLivreur('${c.id}')">✅ Accepter</button>
+        `;
+
         liste.appendChild(li);
     });
 }
 
-function supprimerProduit(index) {
-    produits.splice(index, 1);
-    afficherProduits();
-}
 
-// =======================
-// Passer une commande
-// =======================
-function passerCommande() {
-    const client = localStorage.getItem("loggedUser");
-    const adresse = document.getElementById("adresse").value.trim();
-    const restaurant = document.getElementById("restaurant").value;
-    let prixLivraison = parseFloat(document.getElementById("prixLivraison").value) || 300;
-    if (prixLivraison < 300) prixLivraison = 300;
+function accepterCommandeLivreur(idCommande) {
+    let toutesCommandes = JSON.parse(localStorage.getItem("toutesCommandes")) || [];
 
-    if (!adresse || produits.length === 0) {
-        alert("Veuillez remplir l'adresse et ajouter au moins un produit.");
-        return;
-    }
+    const index = toutesCommandes.findIndex(c => c.id == idCommande);
+    if (index === -1) return;
 
-    const total = produits.reduce((sum, p) => sum + parseFloat(p.prix), 0) + prixLivraison;
+    // Changer le statut et ajouter le livreur
+    const user = localStorage.getItem("loggedUser");
+    toutesCommandes[index].statut = "acceptée";
+    toutesCommandes[index].livreur = user;
 
-    const commande = {
-        id: client + "-" + Date.now(), // ID unique
-        client,
-        adresse,
-        restaurant: restaurant || "Non spécifié",
-        produits: [...produits],
-        prixLivraison: prixLivraison.toFixed(2),
-        total: total.toFixed(2),
-        date: new Date().toLocaleString(),
-        statut: "en attente"
-    };
-
-    // Stocker par client
-    let commandesParClient = JSON.parse(localStorage.getItem("commandesParClient") || "{}");
-    if (!commandesParClient[client]) commandesParClient[client] = [];
-    commandesParClient[client].push(commande);
-    localStorage.setItem("commandesParClient", JSON.stringify(commandesParClient));
-
-    // Stocker toutes les commandes pour livreurs
-    let toutesCommandes = JSON.parse(localStorage.getItem("toutesCommandes") || "[]");
-    toutesCommandes.push(commande);
+    // Sauvegarder
     localStorage.setItem("toutesCommandes", JSON.stringify(toutesCommandes));
 
-    // Sauvegarder la commande en attente pour ce client
-    localStorage.setItem("commandeEnAttente", JSON.stringify(commande));
+    // Mettre à jour la commande côté client
+    localStorage.setItem("commandeEnAttente", JSON.stringify(toutesCommandes[index]));
 
-    // Réinitialiser produits
-    produits = [];
-    afficherProduits();
-    document.getElementById("prixLivraison").value = "";
+    alert("Commande acceptée !");
 
-    console.log("✅ COMMANDE AJOUTÉE :", commande);
-
-    // Redirection vers attente
-    window.location.href = "attente.html";
+    // 🔹 Redirection sécurisée
+    window.location.replace("CommandeAccepterLivreur.html");
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // =======================
-// Vérifier si commande acceptée
+// Déconnexion
 // =======================
-setInterval(() => {
-    const client = localStorage.getItem("loggedUser");
-    const commandesParClient = JSON.parse(localStorage.getItem("commandesParClient") || "{}");
-    const commandesClient = commandesParClient[client] || [];
-    const commande = commandesClient[commandesClient.length - 1]; // dernière commande
-
-    if (commande && commande.statut === "acceptée") {
-        window.location.href = "commande-client-accepter.html";
-    }
-}, 1000);
-
-
-// Déconnexion & Toggle menu
-
 function logout() {
     localStorage.removeItem("loggedUser");
     localStorage.removeItem("role");
     window.location.href = "index.html";
 }
 
-function toggleMenu() {
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.querySelector('.content').classList.toggle('shift');
-}
+// =======================
+// Rafraîchissement auto
+// =======================
+setInterval(afficherCommandesLivreur, 1000);
+// =======================
+// MENU DYNAMIQUE
+// =======================
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+const content = document.getElementById("content");
+
+// Toggle menu
+menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+    content.classList.toggle("shift");
+});
+
+// Navigation entre sections
+document.querySelectorAll(".sidebar a[data-section]").forEach(link => {
+    link.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const sectionId = link.getAttribute("data-section");
+
+        document.querySelectorAll(".section").forEach(sec =>
+            sec.classList.remove("active")
+        );
+
+        document.getElementById(sectionId).classList.add("active");
+
+        // Fermer menu après clic
+        sidebar.classList.remove("active");
+        content.classList.remove("shift");
+    });
+});
+
+// Afficher commandes par défaut
+document.getElementById("profilNom").textContent = username;
+
