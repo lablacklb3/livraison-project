@@ -1,43 +1,47 @@
-// script.js
+// / by me //
+// LOGIN
 
-// Fonction pour login
 function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const error = document.getElementById("error");
 
-  // Charger utilisateurs depuis localStorage
   let users = JSON.parse(localStorage.getItem("users")) || {};
 
-  if (users[username] && users[username].password === password) {
-    // Stocker l'utilisateur connecté et son rôle
-    localStorage.setItem("loggedUser", username);
-    localStorage.setItem("role", users[username].role);
-
-    // Redirection selon rôle
-    if (users[username].role === "client") {
-      window.location.href = "client.html";
-    } else if (users[username].role === "livreur") {
-      window.location.href = "livreur.html";
-    }
-  } else {
+  if (!users[username] || users[username].password !== password) {
     error.textContent = "Identifiants incorrects";
+    return;
+  }
+
+  localStorage.setItem("loggedUser", username);
+  localStorage.setItem("role", users[username].role);
+
+  if (users[username].role === "client") {
+    window.location.href = "client.html";
+  } else if (users[username].role === "livreur") {
+    window.location.href = "livreur.html";
   }
 }
 
-// Fonction pour créer un nouvel utilisateur
+
+// CREATION UTILISATEUR
+
 function createUser() {
-  const username = document.getElementById("newUser").value;
-  const password = document.getElementById("newPass").value;
-  const role = document.getElementById("role").value; // récupère le rôle
+  const nom = document.getElementById("NOM").value.trim();
+  const numero = document.getElementById("NUMERO").value.trim();
+  const username = document.getElementById("USER").value.trim();
+  const password = document.getElementById("newPass").value.trim();
+  const role = document.getElementById("role").value;
   const msg = document.getElementById("msg");
 
-  if (!username || !password) {
+  msg.style.color = "red";
+  msg.textContent = "";
+
+  if (!nom || !numero || !username || !password) {
     msg.textContent = "Veuillez remplir tous les champs.";
     return;
   }
 
-  // Charger les utilisateurs existants
   let users = JSON.parse(localStorage.getItem("users")) || {};
 
   if (users[username]) {
@@ -45,12 +49,21 @@ function createUser() {
     return;
   }
 
-  // Ajouter le nouvel utilisateur avec son rôle
-  users[username] = { password: password, role: role };
+  users[username] = {
+    nom: nom,
+    numero: numero,
+    password: password,
+    role: role
+  };
 
-  // Enregistrer dans localStorage
   localStorage.setItem("users", JSON.stringify(users));
 
   msg.style.color = "green";
   msg.textContent = "Utilisateur créé avec succès !";
+
+  //  vider les champs
+  document.getElementById("NOM").value = "";
+  document.getElementById("NUMERO").value = "";
+  document.getElementById("USER").value = "";
+  document.getElementById("newPass").value = "";
 }
