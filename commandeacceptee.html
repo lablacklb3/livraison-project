@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Commande Acceptée</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Commande acceptée - Livreur</title>
+    <link rel="stylesheet" href="CommandeAccepterLivreur.css">
 </head>
 <body>
-  <div class="login-container">
-    <h2>Commande Acceptée !</h2>
-    <p>Votre commande a été acceptée par le livreur.</p>
-    <button class="btn" onclick="retourClient()">Retour à l'interface client</button>
-  </div>
 
-  <script>
-    function retourClient() {
-      window.location.href = "client.html";
-    }
-  </script>
+<div class="container">
+    <h1>📦 Commande en cours</h1>
+
+    <div id="details"></div>
+
+    <h3>📍 Position du client</h3>
+<iframe
+    id="mapClient"
+    width="100%"
+    height="300"
+    style="border-radius:15px; border:0;"
+    loading="lazy"
+    allowfullscreen>
+</iframe>
+
+
+    <button onclick="terminerCommande()">✅ Livraison terminée</button>
+
+     <button class="btn cancel" onclick="annulerCommandeLivreur()">❌ NO manwasalakch !!!!!!</button>
+</div>
+
+<script src="CommandeAccepterLivreur.js"></script>
 </body>
 </html>
