@@ -2,22 +2,41 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interface Livreur</title>
-  <link rel="stylesheet" href="interface.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="livreur.css">
 </head>
 <body>
-  <div class="container">
-    <h2 id="welcome">Bienvenue Livreur</h2>
 
-    <div class="commande-liste">
-      <h3>Commandes à livrer</h3>
-      <ul id="listeCommandes"></ul>
-    </div>
+<button class="menu-btn" id="menuBtn">
+  <i class="fas fa-bars"></i>
+</button>
 
-    <button class="btn logout" onclick="logout()">Déconnexion</button>
+<div class="sidebar" id="sidebar">
+  <h2>Livreur</h2>
+
+  <a href="#" data-section="commandes"><i class="fas fa-box"></i> Commandes</a>
+  <a href="#" data-section="profil"><i class="fas fa-user"></i> Profil</a>
+  <a href="#" data-section="historique"><i class="fas fa-clock"></i> Historique</a>
+  <a href="#" data-section="solde"><i class="fas fa-wallet"></i> Solde</a>
+  <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+</div>
+
+
+<div class="content" id="content">
+  <h2 id="welcome">Bienvenue</h2>
+
+  <div id="commandes" class="section active">
+    <h3>📦 Commandes en attente</h3>
+    <ul id="listeCommandes"></ul>
   </div>
+  
+</div>
 
-  <script src="interface-livreur.js"></script>
+<script src="interface-livreur.js"></script>
 </body>
 </html>
