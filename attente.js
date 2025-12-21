@@ -7,6 +7,7 @@ if (!commande) {
 
 // Afficher les détails de la commande
 const details = document.getElementById("detailsCommande");
+const NOM= document.getElementById("nom");
 details.innerHTML = `
     <h3>Détails de la commande</h3>
     <p><strong>Restaurant :</strong> ${commande.restaurant || "Non spécifié"}</p>
@@ -15,27 +16,34 @@ details.innerHTML = `
     <p><strong>Statut :</strong> ${commande.statut || "En attente"}</p>
 `;
 
-// Vérifier le statut toutes les 2 secondes
-setInterval(() => {
-    commande = JSON.parse(localStorage.getItem("commandeEnAttente"));
-    if (!commande) return; // commande supprimée
+// =======================
+// VÉRIFICATION STATUT (CORRIGÉE)
+// =======================
+const checkStatus = setInterval(() => {
+    const commandeActuelle = JSON.parse(localStorage.getItem("commandeEnAttente"));
+    if (!commandeActuelle) return;
 
-    if (commande.statut === "acceptée") {
-        // Redirection automatique vers commande-client-accepter.html
-        window.location.href = "commande-client-accepter.html";
+    if (commandeActuelle.statut === "acceptée") {
+        clearInterval(checkStatus); // 🔥 IMPORTANT
+        window.location.replace("commande-client-accepter.html");
     }
 }, 2000);
 
-// Fonction pour annuler la commande
+// =======================
+// ANNULATION COMMANDE
+// =======================
 function annulerCommande(raison) {
-    if(confirm(`Êtes-vous sûr de vouloir annuler ?\nRaison : ${raison}`)) {
+    if (confirm(`Êtes-vous sûr de vouloir annuler ?\nRaison : ${raison}`)) {
+        
         localStorage.removeItem("commandeEnAttente");
         alert(`Commande annulée ✔\nRaison : ${raison}`);
         window.location.replace("client.html");
     }
 }
 
-// Afficher les raisons
+// =======================
+// AFFICHER RAISONS
+// =======================
 function afficherRaisons() {
     document.getElementById("raisonContainer").style.display = "block";
 }
